@@ -10,4 +10,6 @@ add_executable(forward ${SOURCE_FILES})
 set(SOURCE_FILES tree_search.h backSearch.cpp )
 add_executable(backSearch ${SOURCE_FILES})
 
+set(SOURCE_FILES bidirectional.cpp)
+add_executable(bidirect ${SOURCE_FILES})
 
