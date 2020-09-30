@@ -130,7 +130,7 @@ Node *IDAStar(Node *node, function<int(Node *)> h)
     }
 
     //итеративное углубление
-    for (int i = 0; i < 90; ++i)
+    for (int i = h(node); i < 90; ++i)
     {
         Node *answer = IDAStar_It(node, h, i);
         if (answer != nullptr && isGoal(answer->grid))
