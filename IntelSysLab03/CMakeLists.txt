@@ -3,4 +3,4 @@ project(IntelSysLab03)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(IntelSysLab03 main.cpp set.h)
+add_executable(IntelSysLab03 main.cpp set.h SudokuSolver.cpp SudokuSolver.h)
