@@ -2,13 +2,17 @@
 #include <cstdlib>
 #include <ctime>
 #include <cstring>
+#include <chrono>
 using namespace std;
 
 class Board;
+int max_depth = 5;
+#define AlphaBetaPruning
 
 // Function prototypes
 void minimaxDecision(Board board, int &x, int &y);
 int minimaxValue(Board board, char originalTurn, int searchPly);
+int minimaxABValue(Board board, char originalTurn, int searchPly, int alpha_max, int beta_min);
 
 // The board class represents a board and current player making a move
 class Board
@@ -295,7 +299,11 @@ void minimaxDecision(Board board, int &x, int &y)
 			// Recursive call
 			// Set turn to opponent
 			tempBoard.setCurrentPlayer(tempBoard.getOpponentPiece());
-			int val = minimaxValue(tempBoard, board.getWhosePiece(), 1);
+#ifdef AlphaBetaPruning
+            int val = minimaxABValue(tempBoard, board.getWhosePiece(), 1,99999,-99999);
+#else
+            int val = minimaxValue(tempBoard, board.getWhosePiece(), 1);
+#endif
 			// Remember best move
 			if (val > bestMoveVal)
 			{
@@ -316,9 +324,10 @@ void minimaxDecision(Board board, int &x, int &y)
 // calculate the heuristic. currentTurn flips between X and O.
 int minimaxValue(Board board, char originalTurn, int searchPly)
 {
-	if ((searchPly == 5) || board.gameOver()) // Change to desired ply lookahead
+	if ((searchPly == max_depth) || board.gameOver()) // Change to desired ply lookahead
 	{
-		return board.heuristic(originalTurn); // Termination criteria
+        //cout << "searchPly: "<< searchPly << endl;
+        return board.heuristic(originalTurn); // Termination criteria
 	}
 	int moveX[60], moveY[60];
 	int numMoves;
@@ -366,6 +375,72 @@ int minimaxValue(Board board, char originalTurn, int searchPly)
 	return -1;  // Should never get here
 }
 
+
+int minimaxABValue(Board board, char originalTurn, int searchPly, int alpha_max, int beta_min)
+{
+    if ((searchPly == max_depth) || board.gameOver()) // Change to desired ply lookahead
+    {
+        cout << "searchPly: "<< searchPly << endl;
+        return board.heuristic(originalTurn); // Termination criteria
+    }
+    int moveX[60], moveY[60];
+    int numMoves;
+    char opponent = board.getOpponentPiece();
+
+    board.getMoveList(moveX, moveY, numMoves);
+    if (numMoves == 0) // if no moves skip to next player's turn
+    {
+        Board temp = board;
+        temp.setCurrentPlayer(opponent);
+        return minimaxABValue(temp, originalTurn, searchPly + 1, alpha_max, beta_min);
+    }
+    else
+    {
+        // Remember the best move
+        int bestMoveVal = -99999; // for finding max
+        if (originalTurn != board.getWhosePiece())
+            bestMoveVal = 99999; // for finding min
+        // Try out every single move
+        for (int i = 0; i < numMoves; i++)
+        {
+            // Apply the move to a new board
+            Board tempBoard = board;
+            tempBoard.makeMove(moveX[i], moveY[i]);
+            // Recursive call
+            // Opponent's turn
+            tempBoard.setCurrentPlayer(tempBoard.getOpponentPiece());
+            int val = minimaxABValue(tempBoard, originalTurn, searchPly + 1, alpha_max, beta_min);
+            // Remember best move
+            if (originalTurn == board.getWhosePiece())
+            {
+                // Remember max if it's the originator's turn
+                if (val > bestMoveVal)
+                    bestMoveVal = val;
+                alpha_max = max(alpha_max,bestMoveVal);
+                if (beta_min <= alpha_max)
+                    break;
+            }
+            else
+            {
+                // Remember min if it's opponent turn
+                if (val < bestMoveVal)
+                    bestMoveVal = val;
+                beta_min = min(beta_min,bestMoveVal);
+
+                if(beta_min <=alpha_max)
+                    break;
+            }
+        }
+        return bestMoveVal;
+    }
+    return -1;  // Should never get here
+}
+
+
+
+
+
+
 // Main game loop
 int main()
 {
@@ -373,6 +448,7 @@ int main()
 	Board gameBoard;
 	gameBoard.setCurrentPlayer('X');
 
+    auto time_start = std::chrono::steady_clock::now();
 	while (!gameBoard.gameOver())
 	{
 		gameBoard.display();
@@ -380,13 +456,13 @@ int main()
 		cout << "Enter move." << endl;
 		int x, y;
 		if (gameBoard.getWhosePiece() == 'O')		// Change comments depending on who to play
-									cin >> x >> y;
+		    //cin >> x >> y;
 			//minimaxDecision(gameBoard, x, y);
-		//getRandomMove(board, x, y, 'O');
+            gameBoard.getRandomMove(x, y);
 		else
 			//cin >> x >> y;
 			//gameBoard.getRandomMove(x, y);
-		minimaxDecision(gameBoard, x, y);
+		    minimaxDecision(gameBoard, x, y);
 		if (gameBoard.validMove(x, y) || (x == -1))
 		{
 			cout << "Moving to " << x << " " << y << endl;
@@ -400,9 +476,12 @@ int main()
 			cout << "Invalid move.  Enter move again. " << endl;
 		}
 	}
-	cout << endl << "The game is over!" << endl;
+    auto finish = std::chrono::steady_clock::now();
+    cout << endl << "The game is over!" << endl;
 	gameBoard.display();
 	cout << "X's score: " << gameBoard.score('X') << endl;
 	cout << "O's score: " << gameBoard.score('O') << endl;
-	system("pause");
+    std::chrono::duration<double> diff = finish - time_start;
+    std::cout << diff.count() << std::endl;
+	//system("pause");
 }
