@@ -35,6 +35,10 @@ public:
 	bool gameOver();
 	int heuristic(char whoseTurn);
 	int score(char piece);
+
+    bool operator==(const Board &rhs) const;
+
+    bool operator!=(const Board &rhs) const;
 };
 
 
@@ -143,13 +147,13 @@ void Board::makeMove(int x, int y)
 	// Check up
 	if (checkFlip(x, y + 1, 0, 1))
 		flipPieces(x, y + 1, 0, 1);
-	// Check down-left	
+	// Check down-left
 	if (checkFlip(x - 1, y - 1, -1, -1))
 		flipPieces(x - 1, y - 1, -1, -1);
 	// Check down-right
 	if (checkFlip(x + 1, y - 1, 1, -1))
 		flipPieces(x + 1, y - 1, 1, -1);
-	// Check up-left	
+	// Check up-left
 	if (checkFlip(x - 1, y + 1, -1, 1))
 		flipPieces(x - 1, y + 1, -1, 1);
 	// Check up-right
@@ -177,13 +181,13 @@ bool Board::validMove(int x, int y)
 	// Check up
 	if (checkFlip(x, y + 1, 0, 1))
 		return true;
-	// Check down-left	
+	// Check down-left
 	if (checkFlip(x - 1, y - 1, -1, -1))
 		return true;
 	// Check down-right
 	if (checkFlip(x + 1, y - 1, 1, -1))
 		return true;
-	// Check up-left	
+	// Check up-left
 	if (checkFlip(x - 1, y + 1, -1, 1))
 		return true;
 	// Check up-right
@@ -262,7 +266,7 @@ int Board::score(char piece)
 // The simple heuristic is simply the number of our pieces - the number of opponent pieces.
 // Weighting the edges and corners will result in a better player.
 int Board::heuristic(char whoseTurn)
-{	
+{
 	int ourScore = score(whoseTurn);
 	char opponent = 'X';
 	if (whoseTurn == 'X')
@@ -271,10 +275,21 @@ int Board::heuristic(char whoseTurn)
 	return (ourScore - opponentScore);
 }
 
+bool Board::operator==(const Board &rhs) const
+{
+    return whoseTurn == rhs.whoseTurn &&
+           board == rhs.board;
+}
+
+bool Board::operator!=(const Board &rhs) const
+{
+    return !(rhs == *this);
+}
+
 // This is the minimax decision function. It calls minimaxValue for each position
 // on the board and returns the best move (largest value returned) in x and y.
 void minimaxDecision(Board board, int &x, int &y)
-{	
+{
 	int moveX[60], moveY[60];
 	int numMoves;
 	char opponent = board.getOpponentPiece();
@@ -449,6 +464,8 @@ int main()
 	gameBoard.setCurrentPlayer('X');
 
     auto time_start = std::chrono::steady_clock::now();
+    Board prev;
+    Board preprev;
 	while (!gameBoard.gameOver())
 	{
 		gameBoard.display();
@@ -463,15 +480,27 @@ int main()
 			//cin >> x >> y;
 			//gameBoard.getRandomMove(x, y);
 		    minimaxDecision(gameBoard, x, y);
-		if (gameBoard.validMove(x, y) || (x == -1))
+        if (x == 666)
+        {
+            if (gameBoard == preprev)
+                cout << "Sorry, can't undo more moves." << endl;
+            else
+            {
+                gameBoard = preprev;
+                cout << "Undone 1 move." << endl;
+            }
+        }
+        else if (gameBoard.validMove(x, y) || (x == -1))
 		{
+		    preprev = prev;
+            prev = gameBoard;
 			cout << "Moving to " << x << " " << y << endl;
 			// Use -1 if no move possible
 			if (x != -1)
 				gameBoard.makeMove(x, y);
 			gameBoard.setCurrentPlayer(gameBoard.getOpponentPiece());
 		}
-		else
+        else
 		{
 			cout << "Invalid move.  Enter move again. " << endl;
 		}
