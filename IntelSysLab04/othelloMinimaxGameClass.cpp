@@ -3,6 +3,7 @@
 #include <ctime>
 #include <cstring>
 #include <chrono>
+#include <functional>
 using namespace std;
 
 class Board;
@@ -10,7 +11,7 @@ int max_depth = 5;
 #define AlphaBetaPruning
 
 // Function prototypes
-void minimaxDecision(Board board, int &x, int &y);
+void minimaxDecision(Board board, int& x, int& y);
 int minimaxValue(Board board, char originalTurn, int searchPly);
 int minimaxABValue(Board board, char originalTurn, int searchPly, int alpha_max, int beta_min);
 
@@ -30,15 +31,15 @@ public:
 	void display();
 	void makeMove(int x, int y);
 	bool validMove(int x, int y);
-	void getMoveList(int moveX[], int moveY[], int &numMoves);
-	void getRandomMove(int &x, int &y);
+	void getMoveList(int moveX[], int moveY[], int& numMoves);
+	void getRandomMove(int& x, int& y);
 	bool gameOver();
 	int heuristic(char whoseTurn);
 	int score(char piece);
 
-    bool operator==(const Board &rhs) const;
+	bool operator==(const Board& rhs) const;
 
-    bool operator!=(const Board &rhs) const;
+	bool operator!=(const Board& rhs) const;
 };
 
 
@@ -75,14 +76,14 @@ void Board::setCurrentPlayer(char player)
 // Output the board
 void Board::display()
 {
-	for (int y = 7; y >= 0; y--)
+	for (int y = 0; y < 8; y++)
 	{
-		cout << y << " ";
+		cout << 1 + y << " ";
 		for (int x = 0; x < 8; x++)
 			cout << " " << board[x][y];
 		cout << endl;
 	}
-	cout << "   0 1 2 3 4 5 6 7" << endl;
+	cout << "   a b c d e f g h" << endl;
 }
 
 // Checks a direction from x,y to see if we can make a move
@@ -102,10 +103,10 @@ bool Board::checkFlip(int x, int y, int deltaX, int deltaY)
 			// to move the += to the bottom of the loop
 			if ((x >= 0) && (x < 8) && (y >= 0) && (y < 8))
 			{
-				if (board[x][y] == '.')	// not consecutive
+				if (board[x][y] == '.') // not consecutive
 					return false;
 				if (board[x][y] == myPiece)
-					return true;		// At least one piece we can flip
+					return true; // At least one piece we can flip
 				else
 				{
 					// It is an opponent piece, just keep scanning in our direction
@@ -198,11 +199,11 @@ bool Board::validMove(int x, int y)
 }
 
 // Fills in the arrays with valid moves for the piece.  numMoves is the number of valid moves.
-void Board::getMoveList(int moveX[], int moveY[], int &numMoves)
+void Board::getMoveList(int moveX[], int moveY[], int& numMoves)
 {
-	numMoves = 0;  // Initially no moves found
+	numMoves = 0; // Initially no moves found
 
-				   // Check each square of the board and if we can move there, remember the coordinates
+	// Check each square of the board and if we can move there, remember the coordinates
 	for (int x = 0; x < 8; x++)
 		for (int y = 0; y < 8; y++)
 		{
@@ -210,7 +211,7 @@ void Board::getMoveList(int moveX[], int moveY[], int &numMoves)
 			{
 				moveX[numMoves] = x;
 				moveY[numMoves] = y;
-				numMoves++;		// Increment number of moves found
+				numMoves++; // Increment number of moves found
 			}
 		}
 }
@@ -225,14 +226,14 @@ bool Board::gameOver()
 	// Temporarily flip whoseturn to opponent to get opponent move list
 	whoseTurn = getOpponentPiece();
 	getMoveList(OMoveX, OMoveY, numOMoves);
-	whoseTurn = getOpponentPiece();  // Flip back to original
+	whoseTurn = getOpponentPiece(); // Flip back to original
 	if ((numXMoves == 0) && (numOMoves == 0))
 		return true;
 	return false;
 }
 
 // Using the move list, gets a random move out of this list
-void Board::getRandomMove(int &x, int &y)
+void Board::getRandomMove(int& x, int& y)
 {
 	int moveX[60], moveY[60], numMoves;
 	getMoveList(moveX, moveY, numMoves);
@@ -275,20 +276,20 @@ int Board::heuristic(char whoseTurn)
 	return (ourScore - opponentScore);
 }
 
-bool Board::operator==(const Board &rhs) const
+bool Board::operator==(const Board& rhs) const
 {
-    return whoseTurn == rhs.whoseTurn &&
-           board == rhs.board;
+	return whoseTurn == rhs.whoseTurn &&
+		board == rhs.board;
 }
 
-bool Board::operator!=(const Board &rhs) const
+bool Board::operator!=(const Board& rhs) const
 {
-    return !(rhs == *this);
+	return !(rhs == *this);
 }
 
 // This is the minimax decision function. It calls minimaxValue for each position
 // on the board and returns the best move (largest value returned) in x and y.
-void minimaxDecision(Board board, int &x, int &y)
+void minimaxDecision(Board board, int& x, int& y)
 {
 	int moveX[60], moveY[60];
 	int numMoves;
@@ -315,7 +316,7 @@ void minimaxDecision(Board board, int &x, int &y)
 			// Set turn to opponent
 			tempBoard.setCurrentPlayer(tempBoard.getOpponentPiece());
 #ifdef AlphaBetaPruning
-            int val = minimaxABValue(tempBoard, board.getWhosePiece(), 1,99999,-99999);
+			int val = minimaxABValue(tempBoard, board.getWhosePiece(), 1, 99999, -99999);
 #else
             int val = minimaxValue(tempBoard, board.getWhosePiece(), 1);
 #endif
@@ -341,8 +342,8 @@ int minimaxValue(Board board, char originalTurn, int searchPly)
 {
 	if ((searchPly == max_depth) || board.gameOver()) // Change to desired ply lookahead
 	{
-        //cout << "searchPly: "<< searchPly << endl;
-        return board.heuristic(originalTurn); // Termination criteria
+		//cout << "searchPly: "<< searchPly << endl;
+		return board.heuristic(originalTurn); // Termination criteria
 	}
 	int moveX[60], moveY[60];
 	int numMoves;
@@ -361,7 +362,7 @@ int minimaxValue(Board board, char originalTurn, int searchPly)
 		int bestMoveVal = -99999; // for finding max
 		if (originalTurn != board.getWhosePiece())
 			bestMoveVal = 99999; // for finding min
-								 // Try out every single move
+		// Try out every single move
 		for (int i = 0; i < numMoves; i++)
 		{
 			// Apply the move to a new board
@@ -387,130 +388,198 @@ int minimaxValue(Board board, char originalTurn, int searchPly)
 		}
 		return bestMoveVal;
 	}
-	return -1;  // Should never get here
+	return -1; // Should never get here
 }
 
 
 int minimaxABValue(Board board, char originalTurn, int searchPly, int alpha_max, int beta_min)
 {
-    if ((searchPly == max_depth) || board.gameOver()) // Change to desired ply lookahead
-    {
-        cout << "searchPly: "<< searchPly << endl;
-        return board.heuristic(originalTurn); // Termination criteria
-    }
-    int moveX[60], moveY[60];
-    int numMoves;
-    char opponent = board.getOpponentPiece();
+	if ((searchPly == max_depth) || board.gameOver()) // Change to desired ply lookahead
+	{
+		cout << "searchPly: " << searchPly << endl;
+		return board.heuristic(originalTurn); // Termination criteria
+	}
+	int moveX[60], moveY[60];
+	int numMoves;
+	char opponent = board.getOpponentPiece();
 
-    board.getMoveList(moveX, moveY, numMoves);
-    if (numMoves == 0) // if no moves skip to next player's turn
-    {
-        Board temp = board;
-        temp.setCurrentPlayer(opponent);
-        return minimaxABValue(temp, originalTurn, searchPly + 1, alpha_max, beta_min);
-    }
-    else
-    {
-        // Remember the best move
-        int bestMoveVal = -99999; // for finding max
-        if (originalTurn != board.getWhosePiece())
-            bestMoveVal = 99999; // for finding min
-        // Try out every single move
-        for (int i = 0; i < numMoves; i++)
-        {
-            // Apply the move to a new board
-            Board tempBoard = board;
-            tempBoard.makeMove(moveX[i], moveY[i]);
-            // Recursive call
-            // Opponent's turn
-            tempBoard.setCurrentPlayer(tempBoard.getOpponentPiece());
-            int val = minimaxABValue(tempBoard, originalTurn, searchPly + 1, alpha_max, beta_min);
-            // Remember best move
-            if (originalTurn == board.getWhosePiece())
-            {
-                // Remember max if it's the originator's turn
-                if (val > bestMoveVal)
-                    bestMoveVal = val;
-                alpha_max = max(alpha_max,bestMoveVal);
-                if (beta_min <= alpha_max)
-                    break;
-            }
-            else
-            {
-                // Remember min if it's opponent turn
-                if (val < bestMoveVal)
-                    bestMoveVal = val;
-                beta_min = min(beta_min,bestMoveVal);
+	board.getMoveList(moveX, moveY, numMoves);
+	if (numMoves == 0) // if no moves skip to next player's turn
+	{
+		Board temp = board;
+		temp.setCurrentPlayer(opponent);
+		return minimaxABValue(temp, originalTurn, searchPly + 1, alpha_max, beta_min);
+	}
+	else
+	{
+		// Remember the best move
+		int bestMoveVal = -99999; // for finding max
+		if (originalTurn != board.getWhosePiece())
+			bestMoveVal = 99999; // for finding min
+		// Try out every single move
+		for (int i = 0; i < numMoves; i++)
+		{
+			// Apply the move to a new board
+			Board tempBoard = board;
+			tempBoard.makeMove(moveX[i], moveY[i]);
+			// Recursive call
+			// Opponent's turn
+			tempBoard.setCurrentPlayer(tempBoard.getOpponentPiece());
+			int val = minimaxABValue(tempBoard, originalTurn, searchPly + 1, alpha_max, beta_min);
+			// Remember best move
+			if (originalTurn == board.getWhosePiece())
+			{
+				// Remember max if it's the originator's turn
+				if (val > bestMoveVal)
+					bestMoveVal = val;
+				alpha_max = max(alpha_max, bestMoveVal);
+				if (beta_min <= alpha_max)
+					break;
+			}
+			else
+			{
+				// Remember min if it's opponent turn
+				if (val < bestMoveVal)
+					bestMoveVal = val;
+				beta_min = min(beta_min, bestMoveVal);
 
-                if(beta_min <=alpha_max)
-                    break;
-            }
-        }
-        return bestMoveVal;
-    }
-    return -1;  // Should never get here
+				if (beta_min <= alpha_max)
+					break;
+			}
+		}
+		return bestMoveVal;
+	}
+	return -1; // Should never get here
 }
 
+// true if need undo move (u|r\d+)
+bool readOpponentMove(int& x, int& y)
+{
+	cout << "Enter move." << endl;
+	char column;
+	int row;
+	cin >> column >> row;
+	if (column == 'u' || column == 'r')
+		return true;
+	x = column - 'a';
+	y = row - 1;
+	return false;
+}
 
+ostream& printMove(ostream& out, int x, int y)
+{
+	return out << static_cast<char>(x + 'a') << y + 1;
+}
 
+enum PlayerType {RANDOM, HUMAN, BOT};
 
+const char WHITE = 'X';
+const char BLACK = 'O';
 
+function<bool(Board&, int&, int&)> makePlayer(PlayerType ptype)
+{
+	switch(ptype)
+	{
+	case RANDOM:
+		return [](Board& board, int& x, int& y) {  board.getRandomMove(x, y);  return false; };
+	case HUMAN:
+		return [](Board& board, int& x, int& y) { return readOpponentMove(x, y); };
+	default:
+		return [](Board& board, int& x, int& y)
+		{
+			minimaxDecision(board, x, y);
+			printMove(cerr, x, y) << endl;
+			return false;
+		};
+	}
+}
 
 // Main game loop
-int main()
+int main(int argc, char* argv[])
 {
+	char botColor = BLACK;
+	PlayerType opponentMode = RANDOM;
+	if (argc == 2)
+	{
+		botColor = argv[1][0] == '0' ? BLACK : WHITE;
+		opponentMode = HUMAN;
+	} else if (argc == 3)
+	{
+		opponentMode = argv[1] == "rand" ? RANDOM : HUMAN;
+		botColor = argv[2][0] == '0' ? BLACK : WHITE;
+	}
+	
 	srand(time(NULL));
 	Board gameBoard;
-	gameBoard.setCurrentPlayer('X');
+	gameBoard.setCurrentPlayer(BLACK);
+	const auto black = makePlayer(botColor == BLACK ? BOT : opponentMode);
+	const auto white = makePlayer(botColor == WHITE ? BOT : opponentMode);
+	auto time_start = std::chrono::steady_clock::now();
+	Board prev;
+	Board preprev;
 
-    auto time_start = std::chrono::steady_clock::now();
-    Board prev;
-    Board preprev;
+	// for checking possible moves
+	int moveX[60], moveY[60], numMoves;
 	while (!gameBoard.gameOver())
 	{
 		gameBoard.display();
-		cout << "It is player " << gameBoard.getWhosePiece() << "'s turn." << endl;
-		cout << "Enter move." << endl;
-		int x, y;
-		if (gameBoard.getWhosePiece() == 'O')		// Change comments depending on who to play
-		    //cin >> x >> y;
-			//minimaxDecision(gameBoard, x, y);
-            gameBoard.getRandomMove(x, y);
-		else
-			//cin >> x >> y;
-			//gameBoard.getRandomMove(x, y);
-		    minimaxDecision(gameBoard, x, y);
-        if (x == 666)
-        {
-            if (gameBoard == preprev)
-                cout << "Sorry, can't undo more moves." << endl;
-            else
-            {
-                gameBoard = preprev;
-                cout << "Undone 1 move." << endl;
-            }
-        }
-        else if (gameBoard.validMove(x, y) || (x == -1))
+		gameBoard.getMoveList(moveX, moveY, numMoves);
+		if (numMoves == 0)
 		{
-		    preprev = prev;
-            prev = gameBoard;
-			cout << "Moving to " << x << " " << y << endl;
+			gameBoard.setCurrentPlayer(gameBoard.getOpponentPiece());
+		}
+		cout << "It is player " << gameBoard.getWhosePiece() << "'s turn." << endl;
+		int x, y;
+		bool undo;
+		if (gameBoard.getWhosePiece() == BLACK)
+			undo = black(gameBoard, x, y);
+		else
+			undo = white(gameBoard, x, y);
+		if (undo)
+		{
+			if (gameBoard == preprev)
+				cout << "Sorry, can't undo more moves." << endl;
+			else
+			{
+				gameBoard = preprev;
+				cout << "Undone 1 move." << endl;
+			}
+		}
+		else if (gameBoard.validMove(x, y) || (x == -1))
+		{
+			preprev = prev;
+			prev = gameBoard;
+			printMove(cout << "Moving to ", x, y) << endl;
 			// Use -1 if no move possible
 			if (x != -1)
 				gameBoard.makeMove(x, y);
 			gameBoard.setCurrentPlayer(gameBoard.getOpponentPiece());
 		}
-        else
+		else
 		{
 			cout << "Invalid move.  Enter move again. " << endl;
 		}
 	}
-    auto finish = std::chrono::steady_clock::now();
-    cout << endl << "The game is over!" << endl;
+	auto finish = std::chrono::steady_clock::now();
+	cout << endl << "The game is over!" << endl;
 	gameBoard.display();
-	cout << "X's score: " << gameBoard.score('X') << endl;
-	cout << "O's score: " << gameBoard.score('O') << endl;
-    std::chrono::duration<double> diff = finish - time_start;
-    std::cout << diff.count() << std::endl;
-	//system("pause");
+	const int scoreBlack = gameBoard.score('O');
+	cout << "O's score: " << scoreBlack << endl;
+	const int scoreWhite = gameBoard.score('X');
+	cout << "X's score: " << scoreWhite << endl;
+	std::chrono::duration<double> diff = finish - time_start;
+	std::cout << diff.count() << std::endl;
+	const int total = scoreBlack - scoreWhite;
+	if (total == 0)
+	{
+		cout << "Draw!" << endl;
+		return 4;
+	}
+	if (total > 0 && botColor == BLACK || total < 0 && botColor == WHITE)
+	{
+		cout << "Bot Win!" << endl;
+		return 0;
+	}
+	cout << "Bot Lose" << endl;
+	return 3;
 }
