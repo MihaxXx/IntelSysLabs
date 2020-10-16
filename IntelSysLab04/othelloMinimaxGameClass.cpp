@@ -4,6 +4,7 @@
 #include <cstring>
 #include <chrono>
 #include <functional>
+#include <algorithm>
 using namespace std;
 
 class Board;
@@ -396,7 +397,7 @@ int minimaxABValue(Board board, char originalTurn, int searchPly, int alpha_max,
 {
 	if ((searchPly == max_depth) || board.gameOver()) // Change to desired ply lookahead
 	{
-		cout << "searchPly: " << searchPly << endl;
+		//cout << "searchPly: " << searchPly << endl;
 		return board.heuristic(originalTurn); // Termination criteria
 	}
 	int moveX[60], moveY[60];
@@ -575,7 +576,7 @@ int main(int argc, char* argv[])
 		cout << "Draw!" << endl;
 		return 4;
 	}
-	if (total > 0 && botColor == BLACK || total < 0 && botColor == WHITE)
+	if ((total > 0 && botColor == BLACK )||( total < 0 && botColor == WHITE))
 	{
 		cout << "Bot Win!" << endl;
 		return 0;
