@@ -8,7 +8,7 @@
 using namespace std;
 
 class Board;
-int max_depth = 5;
+int max_depth = 10;
 #define AlphaBetaPruning
 
 // Function prototypes
@@ -41,6 +41,8 @@ public:
 	bool operator==(const Board& rhs) const;
 
 	bool operator!=(const Board& rhs) const;
+
+    int scoreCorners(char whoseTurn);
 };
 
 
@@ -263,6 +265,24 @@ int Board::score(char piece)
 		}
 	return total;
 }
+int Board::scoreCorners(char whoseTurn)
+{
+    int multCorner = 7;
+    int multNearCorner = -3;
+    int sum = 0;
+    sum+= multCorner*(board[0][0]==whoseTurn? 1:-1) + multNearCorner*
+            ((board[1][1]==whoseTurn? 1:-1)+(board[0][1]==whoseTurn? 1:-1)+(board[1][0]==whoseTurn? 1:-1));
+
+    sum+= multCorner*(board[0][7]==whoseTurn? 1:-1) + multNearCorner*
+            ((board[0][6]==whoseTurn? 1:-1)+(board[1][6]==whoseTurn? 1:-1)+(board[1][7]==whoseTurn? 1:-1));
+
+    sum+= multCorner*(board[7][7]==whoseTurn? 1:-1) + multNearCorner*
+            ((board[6][7]==whoseTurn? 1:-1)+(board[7][6]==whoseTurn? 1:-1)+(board[6][6]==whoseTurn? 1:-1));
+
+    sum+= multCorner*(board[7][0]==whoseTurn? 1:-1) + multNearCorner*
+            ((board[7][1]==whoseTurn? 1:-1)+(board[6][0]==whoseTurn? 1:-1)+(board[6][1]==whoseTurn? 1:-1));
+    return sum;
+}
 
 
 // The simple heuristic is simply the number of our pieces - the number of opponent pieces.
@@ -274,7 +294,7 @@ int Board::heuristic(char whoseTurn)
 	if (whoseTurn == 'X')
 		opponent = 'O';
 	int opponentScore = score(opponent);
-	return (ourScore - opponentScore);
+	return (ourScore - opponentScore + scoreCorners(whoseTurn));
 }
 
 bool Board::operator==(const Board& rhs) const
