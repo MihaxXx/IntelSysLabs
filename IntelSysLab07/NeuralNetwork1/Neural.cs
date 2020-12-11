@@ -322,6 +322,7 @@ namespace NeuralNetwork1
         /// <returns>Точность</returns>
         public override double TrainOnDataSet(SamplesSet samplesSet, int epochs_count, double acceptable_error, bool parallel = false)
         {
+            var t = System.DateTime.Now;
             double accuracy = 0;
 
             int samplesLooked = 0; //сколько всего элементов было рассмотрено
@@ -335,21 +336,21 @@ namespace NeuralNetwork1
                 {
                     if (Train(sample) == 0) rightCnt++;
                     samplesLooked++;
-                    if (samplesLooked % 50 == 0) //каждые 50 рассмотренных примеров обновляем индикатор прогресса
-                        updateDelegate(samplesLooked / allSamplesCount, accuracy, new TimeSpan());
+                    if (samplesLooked % 25 == 0) //каждые 25 рассмотренных примеров обновляем индикатор прогресса
+                        updateDelegate(samplesLooked / allSamplesCount, accuracy, DateTime.Now - t);
                 }
 
 
                 accuracy = rightCnt / samplesSet.samples.Count; //после конца каждой эпохи перессчитываем точность для передачи ее в форму
                 if (accuracy >= 1 - acceptable_error - 1e-10) //если точность соответствует допустимой ошибке, выходим
                 {
-                    updateDelegate(1, accuracy, new TimeSpan());
+                    updateDelegate(1, accuracy, DateTime.Now - t);
                     return accuracy;
                 }
-                else updateDelegate(samplesLooked / allSamplesCount, accuracy, new TimeSpan());
+                else updateDelegate(samplesLooked / allSamplesCount, accuracy, DateTime.Now - t);
             }
 
-            updateDelegate(1, accuracy, new TimeSpan());
+            updateDelegate(1, accuracy, DateTime.Now - t);
             return accuracy;
         }
 

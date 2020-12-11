@@ -158,7 +158,7 @@ namespace NeuralNetwork1
             AccordNet = new AccordNet(structure);
             AccordNet.updateDelegate = UpdateLearningInfo;
 
-            net = AccordNet;
+            netTypeBox_SelectedIndexChanged(null, null);
         }
 
         private void classCounter_ValueChanged(object sender, EventArgs e)
