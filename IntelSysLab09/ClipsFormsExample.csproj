@@ -98,11 +98,20 @@
     <Compile Include="ClipsFormsExample.Designer.cs">
       <DependentUpon>ClipsFormsExample.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConfidenceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfidenceDialog.Designer.cs">
+      <DependentUpon>ConfidenceDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="OldRulesReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ClipsFormsExample.resx">
       <DependentUpon>ClipsFormsExample.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfidenceDialog.resx">
+      <DependentUpon>ConfidenceDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

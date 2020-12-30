@@ -57,7 +57,7 @@ namespace ClipsFormsExample
                 else
                     res += confRes = $"?c0";
                 res += ") ))" + "\r\n"+
-                $"(assert(appendmessagehalt (str-cat {string.Join(" \" + \" ",rule.Item1.Select((req, i) =>$"\"{req} (\" ?c{i} \")\""))} \" -> {rule.Item2} (\" {confRes} )))" + "\r\n" +
+                $"(assert(appendmessagehalt (str-cat {string.Join(" \" + \" ",rule.Item1.Select((req, i) =>$"\"{req} (\" ?c{i} \")\""))} \" -> {rule.Item2} (\" {confRes} \")\")))" + "\r\n" +
                     ")\r\n\r\n";
             }
 

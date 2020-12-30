@@ -32,6 +32,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.codeBox = new System.Windows.Forms.TextBox();
+            this.FactsList = new System.Windows.Forms.CheckedListBox();
             this.outputBox = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.factButton = new System.Windows.Forms.Button();
@@ -43,7 +44,6 @@
             this.clipsOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.clipsSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.FactsList = new System.Windows.Forms.CheckedListBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -91,6 +91,16 @@
             this.codeBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.codeBox.Size = new System.Drawing.Size(462, 606);
             this.codeBox.TabIndex = 2;
+            // 
+            // FactsList
+            // 
+            this.FactsList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FactsList.FormattingEnabled = true;
+            this.FactsList.Location = new System.Drawing.Point(0, 300);
+            this.FactsList.Name = "FactsList";
+            this.FactsList.Size = new System.Drawing.Size(520, 306);
+            this.FactsList.TabIndex = 2;
+            this.FactsList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.FactsList_ItemCheck);
             // 
             // outputBox
             // 
@@ -189,15 +199,6 @@
             // 
             this.clipsSaveFileDialog.Filter = "CLIPS files|*.clp|All files|*.*";
             this.clipsSaveFileDialog.Title = "Созранить файл как...";
-            // 
-            // FactsList
-            // 
-            this.FactsList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.FactsList.FormattingEnabled = true;
-            this.FactsList.Location = new System.Drawing.Point(0, 300);
-            this.FactsList.Name = "FactsList";
-            this.FactsList.Size = new System.Drawing.Size(520, 306);
-            this.FactsList.TabIndex = 2;
             // 
             // ClipsFormsExample
             // 

@@ -103,13 +103,13 @@
 	(assert (appendmessagehalt "[S]"))
 )
 
-(defrule ПолучиласьБеда
+(defrule ПолучиласьПоБеда
 	(declare (salience 80))
 	(element (param Максим_Валентинович) (confidence ?с0))
-	(element (param Clips))
-	(element (param Удачный_выбор))
+	(element (param Clips) (confidence ?с1))
+	(element (param Удачный_выбор) (confidence ?с2))
 	=>
-	(assert (element (param Победа) (confidence 100) ))
+	(assert (element (param Победа) (confidence (/ (+ ?с0 ?с1 ?с2) 3)) ) )
 	(assert (appendmessagehalt "Максим_Валентинович, Clips, Удачный_выбор -> Победа"))
 )
 (defrule ПолучиласьБеда

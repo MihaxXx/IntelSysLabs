@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 
 using CLIPSNET;
-
+using AutoFormsExample;
 
 namespace ClipsFormsExample
 {
@@ -19,6 +19,7 @@ namespace ClipsFormsExample
         //num, type, fact
         List<(int, char, string)> facts;
         List<(List<int>, int)> rules;
+        Dictionary<int, int> checkedConfidenceValues = new Dictionary<int, int>();
 
         private CLIPSNET.Environment clips = new CLIPSNET.Environment();
 
@@ -66,8 +67,8 @@ namespace ClipsFormsExample
                     if (result == DialogResult.Yes || result == DialogResult.No)
                     {
                         string answr = result == DialogResult.Yes ? "Удачный_выбор" : "Неудачный_выбор";
-                        clips.Eval($"(assert(element(param { answr })))");
-                        outputBox.Text += "Добавлен факт: " + answr + System.Environment.NewLine;
+                        clips.Eval($"(assert(element(param { answr }) (confidence 100)))");
+                        outputBox.Text += "Добавлен факт: " + answr + " (100)"+ System.Environment.NewLine;
                     }
                 }
                 else
@@ -148,12 +149,28 @@ namespace ClipsFormsExample
 
         private void button1_Click(object sender, EventArgs e)
         {
-            foreach (var selFact in FactsList.CheckedItems.Cast<(int, char, string)>().Select(f => f.Item3.Replace(' ', '_').Replace("\"", "")))
+            foreach (var _selFact in FactsList.CheckedItems.Cast<(int, char, string)>())
             {
-                clips.Eval($"(assert (element (param {selFact})))");
-                outputBox.Text += $"Добавлен факт: {selFact}\r\n";
+                var selFact = _selFact.Item3.Replace(' ', '_').Replace("\"", "");
+                clips.Eval($"(assert (element (param {selFact}) (confidence {checkedConfidenceValues[_selFact.Item1]})))");
+                outputBox.Text += $"Добавлен факт: {selFact} ({checkedConfidenceValues[_selFact.Item1]})\r\n";
             }
         }
 
+        private void FactsList_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (e.NewValue == CheckState.Checked) //выбрали факт
+            {
+                var dia = new ConfidenceDialog((((int, char, string))FactsList.Items[e.Index]).Item3);
+                var result = dia.ShowDialog(this);
+                if (result == DialogResult.OK)
+                {
+                    checkedConfidenceValues.Add((((int, char, string))FactsList.Items[e.Index]).Item1, dia.confidence);
+                }
+
+            }
+            else //исключили факт из выбора
+                checkedConfidenceValues.Remove((((int, char, string))FactsList.Items[e.Index]).Item1);
+        }
     }
 }
