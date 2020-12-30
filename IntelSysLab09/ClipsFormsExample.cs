@@ -167,6 +167,8 @@ namespace ClipsFormsExample
                 {
                     checkedConfidenceValues.Add((((int, char, string))FactsList.Items[e.Index]).Item1, dia.confidence);
                 }
+                else
+                    e.NewValue = e.CurrentValue;
 
             }
             else //исключили факт из выбора

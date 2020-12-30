@@ -96,6 +96,37 @@
 	(assert (appendmessagehalt "Добро пожаловать в очередной не deprecated кошмар разработчика!"))
 )
 
+(defrule compose
+	(declare (salience 80))
+	?e0 <- (element (param ?p1) (confidence ?c0))
+	?e1 <- (element (param ?p1) (confidence ?c1))
+	(test (neq ?e0 ?e1))
+	(test (>= ?c0 15))
+	(test (>= ?c1 15))
+	=>
+	(assert (appendmessagehalt (str-cat ?p1 " (" ?c0 ") + " ?p1 " (" ?c1 ")")))
+	(retract ?e0)
+	(retract ?e1)
+	(assert (element (param ?p1) (confidence (/ (+ ?c0 ?c1) 2))))
+)
+
+(defrule compose
+	(declare (salience 80))
+	?e0 <- (element (param ?p1) (confidence ?c0))
+	?e1 <- (element (param ?p1) (confidence ?c1))
+	?e2 <- (element (param ?p1) (confidence ?c2))
+	(test (and (neq ?e0 ?e1) (neq ?e1 ?e2) (neq ?e0 ?e2)))
+	(test (>= ?c0 15))
+	(test (>= ?c1 15))
+	(test (>= ?c2 15))
+	=>
+	(assert (appendmessagehalt (str-cat ?p1 " (" ?c0 ") + " ?p1 " (" ?c1 ") + " ?p1 " (" ?c2 ")")))
+	(retract ?e0)
+	(retract ?e1)
+	(retract ?e2)
+	(assert (element (param ?p1) (confidence (/ (+ ?c0 ?c1 ?c2) 3))))
+)
+
 (defrule НеСпроситьаПоинтересоваться
 	(declare (salience 20))
 	(element (param Максим_Валентинович) (confidence ?с0))

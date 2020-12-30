@@ -28,5 +28,10 @@ namespace AutoFormsExample
             DialogResult = DialogResult.OK;
             this.Hide();
         }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            curVal.Text = trackBar1.Value.ToString();
+        }
     }
 }

@@ -34,6 +34,8 @@ namespace AutoFormsExample
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.OK = new System.Windows.Forms.Button();
+            this.curVal = new System.Windows.Forms.Label();
+            this.CancelBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,6 +47,7 @@ namespace AutoFormsExample
             this.trackBar1.Size = new System.Drawing.Size(311, 45);
             this.trackBar1.TabIndex = 0;
             this.trackBar1.Value = 75;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // msg
             // 
@@ -58,7 +61,7 @@ namespace AutoFormsExample
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 38);
+            this.label2.Location = new System.Drawing.Point(13, 47);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(13, 13);
             this.label2.TabIndex = 2;
@@ -67,7 +70,7 @@ namespace AutoFormsExample
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(349, 38);
+            this.label3.Location = new System.Drawing.Point(349, 47);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(25, 13);
             this.label3.TabIndex = 3;
@@ -83,12 +86,34 @@ namespace AutoFormsExample
             this.OK.UseVisualStyleBackColor = true;
             this.OK.Click += new System.EventHandler(this.OK_Click);
             // 
+            // curVal
+            // 
+            this.curVal.AutoSize = true;
+            this.curVal.Location = new System.Drawing.Point(350, 31);
+            this.curVal.Name = "curVal";
+            this.curVal.Size = new System.Drawing.Size(19, 13);
+            this.curVal.TabIndex = 5;
+            this.curVal.Text = "75";
+            // 
+            // CancelBtn
+            // 
+            this.CancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.CancelBtn.Location = new System.Drawing.Point(218, 110);
+            this.CancelBtn.Name = "CancelBtn";
+            this.CancelBtn.Size = new System.Drawing.Size(75, 23);
+            this.CancelBtn.TabIndex = 6;
+            this.CancelBtn.Text = "Отмена";
+            this.CancelBtn.UseVisualStyleBackColor = true;
+            // 
             // ConfidenceDialog
             // 
             this.AcceptButton = this.OK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.CancelBtn;
             this.ClientSize = new System.Drawing.Size(386, 146);
+            this.Controls.Add(this.CancelBtn);
+            this.Controls.Add(this.curVal);
             this.Controls.Add(this.OK);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -110,5 +135,7 @@ namespace AutoFormsExample
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button OK;
+        private System.Windows.Forms.Label curVal;
+        private System.Windows.Forms.Button CancelBtn;
     }
 }
